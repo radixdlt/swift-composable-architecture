@@ -646,6 +646,35 @@ public final class Store<State, Action> {
     #endif
     self.threadCheck(status: .`init`)
   }
+
+  /// Scopes the store to one that exposes child state and actions.
+  ///
+  /// A version of ``scope(state:action:)-9iai9`` that exposes the child state along
+  /// with the child action for scoping actions.
+  ///
+  /// - Parameters:
+  ///   - toChildState: A function that transforms `State` into `ChildState`.
+  ///   - fromChildAction: A function that transforms `ChildState` and `ChildAction` into `Action`.
+  /// - Returns: A new store with its domain (state and action) transformed.
+  @_disfavoredOverload
+  @_spi(Internals) public func scope<ChildState, ChildAction>(
+    state toChildState: @escaping (State) -> ChildState,
+    action fromChildStateAndAction: @escaping (ChildState, ChildAction) -> Action
+  ) -> Store<ChildState, ChildAction> {
+    self.threadCheck(status: .scope)
+
+	  #if swift(>=5.7)
+	  return self.reducer.rescope(
+		self,
+		state: toChildState,
+		action: { fromChildStateAndAction($0, $1) },
+		removeDuplicates: nil
+	  )
+	  #else
+    return (self.scope ?? StoreScope(root: self))
+      .rescope(self, state: toChildState, action: { fromChildStateAndAction($0, $1) })
+	  #endif
+  }
 }
 
 /// A convenience type alias for referring to a store of a given reducer's domain.
