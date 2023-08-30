@@ -177,10 +177,8 @@ extension EffectPublisher where Failure == Never {
             do {
               try await operation(send)
             } catch is CancellationError {
-               print("TCA: run - send canceled")
               return
             } catch {
-               print("TCA: run - send failed")
               guard let handler = handler else {
                 #if DEBUG
                   var errorDump = ""
