@@ -270,6 +270,7 @@ public struct Send<Action>: Sendable {
   let send: @MainActor @Sendable (Action) -> Void
 
   public init(send: @escaping @MainActor @Sendable (Action) -> Void) {
+    print("TCA: Send initialized")
     self.send = send
   }
 
@@ -277,7 +278,12 @@ public struct Send<Action>: Sendable {
   ///
   /// - Parameter action: An action.
   public func callAsFunction(_ action: Action) {
-    guard !Task.isCancelled else { return }
+     print("TCA: Send action \(action)")
+    guard !Task.isCancelled else { 
+      print("TCA: Send action \(action) task cancelled!!!")
+                                  return
+    }
+    print("TCA: Send action \(action) sent")
     self.send(action)
   }
 
