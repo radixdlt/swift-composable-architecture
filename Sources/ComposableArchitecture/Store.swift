@@ -404,8 +404,12 @@ public final class Store<State, Action> {
   ) -> Task<Void, Never>? {
     self.threadCheck(status: .send(action, originatingAction: originatingAction))
 
+    print("TCA: received action \(action)")
     self.bufferedActions.append(action)
-    guard !self.isSending else { return nil }
+    guard !self.isSending else { 
+	    print("TCA: isSending is true")
+				return nil
+    }
 
     self.isSending = true
     var currentState = self.state.value
@@ -474,6 +478,7 @@ public final class Store<State, Action> {
           self.effectCancellables[uuid] = effectCancellable
         }
       case let .run(priority, operation):
+	       print("TCA: executing run operation")
         withEscapedDependencies { continuation in
           tasks.wrappedValue.append(
             Task(priority: priority) { @MainActor in
@@ -518,7 +523,10 @@ public final class Store<State, Action> {
       }
     }
 
-    guard !tasks.wrappedValue.isEmpty else { return nil }
+    guard !tasks.wrappedValue.isEmpty else { 
+	     print("TCA: task.wrappedValue is empty")
+					    return nil
+    }
     return Task { @MainActor in
       await withTaskCancellationHandler {
         var index = tasks.wrappedValue.startIndex
