@@ -175,10 +175,14 @@ extension EffectPublisher where Failure == Never {
         operation: .run(priority) { send in
           await escaped.yield {
             do {
+              print("TCA: run - executing send")
               try await operation(send)
+               print("TCA: run - operation did finish")
             } catch is CancellationError {
+               print("TCA: run - send canceled")
               return
             } catch {
+               print("TCA: run - send failed")
               guard let handler = handler else {
                 #if DEBUG
                   var errorDump = ""
