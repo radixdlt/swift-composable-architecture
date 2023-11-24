@@ -671,7 +671,7 @@ public final class Store<State, Action> {
 	///   - fromChildAction: A function that transforms `ChildState` and `ChildAction` into `Action`.
 	/// - Returns: A new store with its domain (state and action) transformed.
 	@_disfavoredOverload
-	@_spi(Internals) public func scope<ChildState, ChildAction>(
+	@_spi(Internals) public func fullScope<ChildState, ChildAction>(
 		state toChildState: @escaping (State) -> ChildState,
 		action fromChildStateAndAction: @escaping (ChildState, ChildAction) -> Action
 	) -> Store<ChildState, ChildAction> {
